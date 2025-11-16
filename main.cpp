@@ -5,8 +5,8 @@
 using namespace std;
 
 bool isKeyword(const string& word) {
-    string keywords[] = {"int", "float", "if", "else", "while"};
-    int keywordCount = 5;
+    string keywords[] = {"int", "float", "if", "else", "while", "for", "return", "char", "double", "void" , "main"};
+    int keywordCount = sizeof(keywords) / sizeof(keywords[0]);
 
     for (int i = 0; i < keywordCount; i++) {
         if (word == keywords[i])
@@ -15,32 +15,72 @@ bool isKeyword(const string& word) {
     return false;
 }
 
-bool isValid(const string& s) {
+bool isIdentifier(const string& s) {
     if (s.empty()) return false;
 
+    if (!(isalpha(s[0]) || s[0] == '_'))
+        return false;
+
     for (char ch : s) {
-        if (!(isalpha(ch) || isdigit(ch) || ch == '_'))
+        if (!(isalnum(ch) || ch == '_'))
             return false;
     }
 
     return true;
 }
+bool isPunctuationChar(char ch) {
+    string punct = ";,.(){}[]+-*/=%<>!";
+    return punct.find(ch) != string::npos;
+}
+void tokenizeLine(const string& line, int ln) {
+    cout << "Line " << ln << ": " << line << "\n";
+
+    int i = 0, n = line.size();
+
+    while (i < n) {
+
+        if (isspace((unsigned char)line[i])) {
+            i++;
+            continue;
+        }
+
+        if (isalpha(line[i]) || line[i] == '_') {
+            string token;
+            while (i < n && (isalnum(line[i]) || line[i] == '_')) {
+                token += line[i];
+                i++;
+            }
+
+            if (isKeyword(token))
+                cout << "  -> " << token << " is  KEYWORD\n";
+            else
+                cout << "  -> " << token << " is  IDENTIFIER\n";
+        }
+
+        else if (isPunctuationChar(line[i])) {
+            cout << "  -> " << line[i] << " is  PUNCTUATION\n";
+            i++;
+        }
+        else {
+
+            cout << "  -> " << line[i] << " is  UNKNOWN\n";
+            i++;
+        }
+    }
+    cout << "\n";
+}
 
 int main() {
     ifstream file("demo.txt");
     if (!file.is_open()) {
-        cerr << "Error opening the file!" << endl;
+        cerr << "Error opening file!" << endl;
         return 1;
     }
 
     string line;
+    int ln = 1;
     while (getline(file, line)) {
-        if (isKeyword(line))
-            cout << line << " is a KEYWORD" << endl;
-        else if (isValid(line))
-            cout << line << " is VALID" << endl;
-        else
-            cout << line << " is INVALID" << endl;
+        tokenizeLine(line, ln++);
     }
 
     file.close();

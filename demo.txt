@@ -1,4 +1,17 @@
-hi afkehfsd;l aslkghda;l
-am asfjdha
-a12 21312saa
-tanvir
+int main() {
+    ifstream file("demo.txt");
+    if (!file.is_open()) {
+        cerr << "Error opening the file!" << endl;
+        return 1;
+    }
+
+    string line;
+    int lineNumber = 1;
+    while (getline(file, line)) {
+        tokenizeLine(line, lineNumber);
+        lineNumber++;
+    }
+
+    file.close();
+    return 0;
+}
